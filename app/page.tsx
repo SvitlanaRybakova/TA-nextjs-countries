@@ -6,6 +6,7 @@ import { getCountries } from "./common/api";
 import { ICountriesResponse, ICountry } from "./common/interfaces";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Loader from "@/components/Loader";
+import CustomError from "@/components/CustomError";
 
 export default function Home() {
   const [data, setData] = useState<ICountry[] | null>(null);
@@ -13,6 +14,8 @@ export default function Home() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const getAllCountries = async () => {
+    setData(null)
+    setError(null)
     setLoading(true);
     try {
       const countries: ICountriesResponse = await getCountries();
@@ -30,12 +33,12 @@ export default function Home() {
     getAllCountries();
   }, []);
 
-  if (error) return <div>Error: {error}</div>;
-  // if (!data) return <div>Loading...</div>;
+ 
 
   return (
     <main className="flex flex-wrap min-h-screen  gap-2 items-center justify-between p-24">
       {loading && <Loader />}
+      {error && <CustomError message={error}/>}
       {data &&
         data.map((country) => (
           <Card className="w-64 h-56" key={uuidv4()}>
