@@ -13,7 +13,9 @@ import SearchBar from "@/components/SearchBar";
 export default function Home() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const { replace } = useRouter();
+  const { replace } = useRouter()
+
+
 
   const [data, setData] = useState<ICountry[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -42,19 +44,22 @@ export default function Home() {
   }, []);
 
   const handleSearch = async (searchText: string) => {
-    if(searchText.trim().length === 0) return
-    const updatedParams = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(window.location.search);
 
+    if (searchText.trim().length === 0) {
+      replace(`${pathname}?${params.toString()}`)
+      getAllCountries()
+      return
+    };
+    
     if (searchText) {
-      updatedParams.set("query", searchText);
+      params.set("query", searchText);
     } else {
-      updatedParams.delete("query");
+      params.delete("query");
     }
 
     setSearchText(searchText);
-
-    replace(`${pathname}?${updatedParams.toString()}`);
-
+    replace(`${pathname}?${params.toString()}`)
     setLoading(true);
     try {
       const response: ICountry = await getCountryCapital(searchText);
