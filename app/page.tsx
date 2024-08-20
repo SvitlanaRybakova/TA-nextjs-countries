@@ -14,8 +14,8 @@ export default function Home() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const getAllCountries = async () => {
-    setData(null)
-    setError(null)
+    setData(null);
+    setError(null);
     setLoading(true);
     try {
       const countries: ICountriesResponse = await getCountries();
@@ -33,12 +33,10 @@ export default function Home() {
     getAllCountries();
   }, []);
 
- 
-
   return (
     <main className="flex flex-wrap min-h-screen  gap-2 items-center justify-between p-24">
       {loading && <Loader />}
-      {error && <CustomError message={error}/>}
+      {error && <CustomError message={error} />}
       {data &&
         data.map((country) => (
           <Card className="w-64 h-56" key={uuidv4()}>
