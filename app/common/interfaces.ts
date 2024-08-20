@@ -4,3 +4,9 @@ export interface ICountry {
   iso2: string;
   iso3: string;
 }
+
+export interface ICountriesResponse {
+  error: boolean;
+  msg: string;
+  data: ICountry[];
+}

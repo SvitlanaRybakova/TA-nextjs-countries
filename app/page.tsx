@@ -1,9 +1,10 @@
 "use client";
-
-import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
+
 import { getCountries } from "./common/api";
-import { ICountry } from "./common/interfaces";
+import { ICountriesResponse, ICountry } from "./common/interfaces";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function Home() {
   const [data, setData] = useState<ICountry[] | null>(null);
@@ -11,7 +12,8 @@ export default function Home() {
 
   const getAllCountries = async () => {
     try {
-      const countries = await getCountries();
+      const countries: ICountriesResponse = await getCountries();
+      if (countries.error) return setError(countries.msg);
       setData(countries.data);
     } catch (err) {
       if (err instanceof Error) {
@@ -28,8 +30,18 @@ export default function Home() {
   if (!data) return <div>Loading...</div>;
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Button>Shadcn</Button>
+    <main className="flex flex-wrap min-h-screen  gap-2 items-center justify-between p-24">
+      {data &&
+        data.map((country) => (
+          <Card className="w-64 h-56" key={uuidv4()}>
+            <CardHeader>
+              <CardTitle className="text-lg">{country.name}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="italic text-sm">Capital: {country.capital}</p>
+            </CardContent>
+          </Card>
+        ))}
     </main>
   );
 }
