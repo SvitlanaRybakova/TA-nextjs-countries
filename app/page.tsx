@@ -1,12 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
-import { v4 as uuidv4 } from "uuid";
 
 import { getCountries } from "./common/api";
 import { ICountriesResponse, ICountry } from "./common/interfaces";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import Loader from "@/components/Loader";
 import CustomError from "@/components/CustomError";
+import CardList from "@/components/CardsList";
 
 export default function Home() {
   const [data, setData] = useState<ICountry[] | null>(null);
@@ -37,17 +37,7 @@ export default function Home() {
     <main className="flex flex-wrap min-h-screen  gap-2 items-center justify-between p-24">
       {loading && <Loader />}
       {error && <CustomError message={error} />}
-      {data &&
-        data.map((country) => (
-          <Card className="w-64 h-56" key={uuidv4()}>
-            <CardHeader>
-              <CardTitle className="text-lg">{country.name}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="italic text-sm">Capital: {country.capital}</p>
-            </CardContent>
-          </Card>
-        ))}
+      {data && <CardList countries={data} />}
     </main>
   );
 }
