@@ -10,10 +10,10 @@ const CardList: React.FC<CardListProps> = ({ countries }) => {
   return countries.map((country: ICountry) => (
     <Card className="w-64 h-56" key={uuidv4()}>
       <CardHeader>
-        <CardTitle className="text-lg">{country.name}</CardTitle>
+        <CardTitle className="text-lg">{country?.name}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="italic text-sm">Capital: {country.capital}</p>
+        <p className="italic text-sm">Capital: {country?.capital}</p>
       </CardContent>
     </Card>
   ));
