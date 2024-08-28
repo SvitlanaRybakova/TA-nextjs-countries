@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
 
-import { getCountries, getCountryCapital } from "./common/api";
-import { ICountriesResponse, ICountry } from "./common/interfaces";
+import { getCountries } from "./common/api";
+import { ICountry } from "./common/interfaces";
 
 import Loader from "@/components/Loader";
 import CustomError from "@/components/CustomError";
@@ -13,22 +13,23 @@ import SearchBar from "@/components/SearchBar";
 export default function Home() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const { replace } = useRouter()
-
-
+  const { replace } = useRouter();
 
   const [data, setData] = useState<ICountry[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState(searchParams.get("query") || "");
 
-  const getAllCountries = async () => {
+  const params = new URLSearchParams(window.location.search);
+
+  const renderCountries = async () => {
     setData(null);
     setError(null);
     setLoading(true);
     try {
-      const countries: ICountriesResponse = await getCountries();
-      if (countries.error) return setError(countries.msg);
-      setData(countries.data);
+      const countries: ICountry[] | null = await getCountries(searchText);
+
+      setData(countries);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -37,21 +38,20 @@ export default function Home() {
     setLoading(false);
   };
 
-  const [searchText, setSearchText] = useState(searchParams.get("query") || "");
-
   useEffect(() => {
-    getAllCountries();
+    renderCountries();
   }, []);
 
   const handleSearch = async (searchText: string) => {
-    const params = new URLSearchParams(window.location.search);
-
     if (searchText.trim().length === 0) {
-      replace(`${pathname}?${params.toString()}`)
-      getAllCountries()
-      return
-    };
-    
+      params.delete("query");
+      replace(`${pathname}?${params.toString()}`);
+      console.log("inside the if", searchText.length, params.toString());
+
+      renderCountries();
+      return;
+    }
+
     if (searchText) {
       params.set("query", searchText);
     } else {
@@ -59,12 +59,10 @@ export default function Home() {
     }
 
     setSearchText(searchText);
-    replace(`${pathname}?${params.toString()}`)
+    replace(`${pathname}?${params.toString()}`);
     setLoading(true);
     try {
-      const response: ICountry = await getCountryCapital(searchText);
-
-      setData([response]);
+      renderCountries();
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);

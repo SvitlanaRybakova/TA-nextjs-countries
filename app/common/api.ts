@@ -1,18 +1,19 @@
 import axios from "axios";
-
-export const getCountries = async () => {
-  const res = await axios.get(`/api/countries`);
+const checkResponse = (res) => {
   if (res.status !== 200) {
     throw new Error(res.statusText);
   }
-  return res.data;
 };
 
-export const getCountryCapital = async (query: string) => {
-  const res = await axios.post(`/api/countries`, { country: query });
-
-  if (res.status !== 200) {
-    throw new Error(res.statusText);
+export const getCountries = async (query: string) => {
+  let res;
+  if (query.trim().length === 0) {
+    res = await axios.get(`/api/countries`);
+    checkResponse(res);
+    return res.data.data;
+  } else {
+    res = await axios.post(`/api/countries`, { country: query });
+    checkResponse(res);
+    return [res.data.data];
   }
-  return res.data.data;
 };
